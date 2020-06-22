@@ -5,6 +5,10 @@ import MovieCard from './components/MovieCard';
 
 class App extends React.Component {
   componentWillMount(){
+    this.props.store.subscribe(()=>{
+      console.log("Updated");
+      
+    })
   this.props.store.dispatch({
     type:'ADD_MOVIES',
     movies:data
