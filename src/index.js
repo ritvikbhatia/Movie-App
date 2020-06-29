@@ -4,9 +4,9 @@ import { createStore } from 'redux';
 
 import './index.css';
 import App from './components/App';
-import movies from './reducers';
+import rootReducer from './reducers';
 
-const store = createStore(movies);
+const store = createStore(rootReducer);
 console.log('store', store);
 // console.log('STATE', store.getState());
 
@@ -16,6 +16,6 @@ console.log('store', store);
 // });
 
 // console.log('AFTER STATE', store.getState());
-ReactDOM.render(<App store={store}/>, document.getElementById('root'));
+ReactDOM.render(<App store={store} />, document.getElementById('root'));
 
 
