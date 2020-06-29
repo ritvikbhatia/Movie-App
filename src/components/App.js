@@ -19,7 +19,22 @@ class App extends React.Component {
 
     console.log('STATE', this.props.store.getState());
   }
-
+  showFavs=()=>{
+    const {store} = this.props;
+    const { favourites } = this.props.store.getState();
+    store.dispatch({
+      type: 'ADD_MOVIES',
+      movies: favourites
+    });
+  }
+  showMovies=()=>{
+    const {store} = this.props;
+    const { favourites } = this.props.store.getState();
+    store.dispatch({
+      type: 'ADD_MOVIES',
+      movies: data
+    });
+  }
   isMovieFavourite = (movie) => {
     const { favourites } = this.props.store.getState();
 
@@ -39,8 +54,8 @@ class App extends React.Component {
       <Navbar />
       <div className="main">
         <div className="tabs">
-          <div className="tab">Movies</div>
-          <div className="tab">Favourites</div>
+          <div className="tab" onClick={this.showMovies}>Movies</div>
+          <div className="tab" onClick={this.showFavs}>Favourites</div>
         </div>
 
         <div className="list">
