@@ -1,96 +1,88 @@
-import React from "react";
-import { data } from "../data";
-import Navbar from "./Navbar";
-import MovieCard from "./MovieCard";
-import { addMovies, setShowFavourites } from "../actions";
+import React from 'react';
+import { connect } from 'react-redux';
+import Navbar from './Navbar';
+import MovieCard from './MovieCard';
+import { addMovies, setShowFavourites } from '../actions';
+import { data as moviesList } from '../data';
 
 class App extends React.Component {
-
   componentDidMount() {
-    const { store } = this.props;
-
-    store.subscribe(() => {
-      console.log("Updated");
-
-      //we should not use this method to update bcz this is forcefully update the app component
-      this.forceUpdate();
-    });
-    //make api call
-    //dispatch action
-
-    // store.dispatch({
-    //   type: 'ADD_MOVIES',
-    //   movies: data,
-    // });
-
-
-    store.dispatch(addMovies(data));
-
-    console.log("STATE", this.props.store.getState());
+    this.props.dispatch(addMovies(moviesList));
   }
 
-  isMovieFavourite = (movie) => {
-    const { movies } = this.props.store.getState();
+  isMovieInFavourites = (movie) => {
+    const { movies } = this.props;
 
     const index = movies.favourites.indexOf(movie);
-    if (index === -1) {
-      //found the movie
-      return true
+    if (index !== -1) {
+      return true;
     }
 
     return false;
-  }
+  };
 
-
-  onChangeTab = (val) => {
-
-    this.props.store.dispatch(setShowFavourites(val))
-
-  }
-
-
-
-
+  changeTab = (val) => {
+    this.props.dispatch(setShowFavourites(val));
+  };
   render() {
-
-    const { movies, search } = this.props.store.getState(); //{movies:{},search:{}}
-    const { list, favourites, showFavourite } = movies;
-
-    const displayMovies = showFavourite ? favourites : list;
-
-    console.log('Render', this.props.store.getState())
-
-
+    const { movies, search } = this.props; // will return { movies: {}, search: []}
+    console.log('movies', movies);
+    const { list, showFavourites = [], favourites = [] } = movies;
+    const displayMovies = showFavourites ? favourites : list;
 
     return (
       <div className="App">
-        < Navbar dispatch={this.props.store.dispatch} search={search} />
-        <div className="main" >
-          <div className="tabs" >
-            < div className={` tab ${showFavourite ? '' : 'active-tab'}`} onClick={() => this.onChangeTab(false)} > Movies </div>
-            <div className={` tab ${showFavourite ? 'active-tab' : ' '}`} onClick={() => this.onChangeTab(true)}> Favourites </div>
-          </div >
-
-          <div className="list" >
-
-            {displayMovies.map((movie, index) => (<MovieCard movie={movie
-            }
-              key={
-                `movies-${index}`
-              }
-
-              dispatch={this.props.store.dispatch}
-
-              isFav={this.isMovieFavourite(movie)}
-            />
-            ))
-            }
+        <Navbar search={search} />
+        <div className="main">
+          <div className="tabs">
+            <div
+              className={`tab ${showFavourites ? '' : 'active-tabs'}`}
+              onClick={() => this.changeTab(false)}
+            >
+              Movies
+            </div>
+            <div
+              className={`tab ${showFavourites ? 'active-tabs' : ''}`}
+              onClick={() => this.changeTab(true)}
+            >
+              Favourites
+            </div>
           </div>
-          {displayMovies.length === 0 ? <div className="no-movies">No movies</div> : null}
+
+          <div id="list">
+            {displayMovies.map((movie) => (
+              <MovieCard
+                movie={movie}
+                key={movie.imdbID}
+                dispatch={this.props.dispatch}
+                isFavourite={this.isMovieInFavourites(movie)}
+              />
+            ))}
+            {displayMovies.length === 0 ? (
+              <div className="no-movies">No movies to display! </div>
+            ) : null}
+          </div>
         </div>
       </div>
     );
   }
 }
 
-export default App;
+// class AppWrapper extends React.Component {
+//   render() {
+//     return (
+//       <StoreContext.Consumer>
+//         {(store) => <App store={store} />}
+//       </StoreContext.Consumer>
+//     );
+//   }
+// }
+
+function callback(state) {
+  return {
+    movies: state.movies,
+    search: state.movies,
+  };
+}
+const connectedComponent = connect(callback)(App);
+export default connectedComponent;
